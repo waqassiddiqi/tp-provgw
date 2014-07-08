@@ -4,10 +4,8 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,11 +62,10 @@ public class SubscriberDAO {
 			Subscriber existingSub = getSubscriberByMsisdn(sub.getMsisdn());
 			if(existingSub != null) {
 				if(existingSub.getStatus() != 1) {
-					strSql = "UPDATE subscriber_tab set status = 1, last_updated_date = ? WHERE msisdn = ?";
+					strSql = "UPDATE subscriber_tab set status = 1, last_updated_date = NOW() WHERE msisdn = ?";
 					
 					stmt = this.db.getConnection().prepareStatement(strSql);
-					stmt.setTimestamp(1, new Timestamp(new Date().getTime()));
-					stmt.setString(2, sub.getMsisdn());
+					stmt.setString(1, sub.getMsisdn());
 					
 				} else {
 					return true;

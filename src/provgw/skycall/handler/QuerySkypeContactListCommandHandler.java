@@ -41,6 +41,7 @@ public class QuerySkypeContactListCommandHandler extends CommandHandler {
 		
 		String[] contacts = new String[skypeContacts.size() * 2];
 		int index = 0;
+		StringBuilder sb = new StringBuilder();
 		
 		for (Map.Entry<String, String> entry : skypeContacts.entrySet()) {
 		    String skypeId = entry.getKey();
@@ -49,13 +50,18 @@ public class QuerySkypeContactListCommandHandler extends CommandHandler {
 		    contacts[2*index] = "skypeid";
 			contacts[2*index+1] = skypeId + "," + virualId;		    
 			index++;
+			
+			sb.append("> " + skypeId + "," + virualId);
+			sb.append(System.lineSeparator());
 		}		
 		
 		if(skypeContacts.size() > 0)
 			return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
-					ResponseBuilder.RESULTCODE_SUCCESS, "", contacts);
+					ResponseBuilder.RESULTCODE_SUCCESS, 
+					MessageRepository.getMessage("message.skype_list", new String[] { sb.toString() }), 
+					contacts);
 		else
 			return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
-					ResponseBuilder.RESULTCODE_SUCCESS, "");
+					ResponseBuilder.RESULTCODE_SUCCESS, MessageRepository.getMessage("message.skype_list_empty"));
 	}
 }

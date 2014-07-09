@@ -42,11 +42,21 @@ public class QuerySubscriberCommandHandler extends CommandHandler {
 			this.setResult(true);
 			this.getSvcEntry().setStat(0);
 			
-			return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
-					ResponseBuilder.RESULTCODE_SUCCESS, 
-					"", 
-					new String[] { "subscribeDate", sub.getSubscriptionDate().toString(), 
-						"subStatus", String.valueOf(sub.getStatus()) } );
+			if(sub.getStatus() == 1) {
+				return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
+						ResponseBuilder.RESULTCODE_SUCCESS, 
+						MessageRepository.getMessage("message.sub_status_active", 
+								new String[] { sub.getSubscriptionDate().toString() }), 
+						new String[] { "subscribeDate", sub.getSubscriptionDate().toString(), 
+							"subStatus", String.valueOf(sub.getStatus()) } );
+			} else {
+				return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
+						ResponseBuilder.RESULTCODE_SUCCESS, 
+						MessageRepository.getMessage("message.sub_status_inactive", 
+								new String[] { sub.getSubscriptionDate().toString() }), 
+						new String[] { "subscribeDate", sub.getSubscriptionDate().toString(), 
+							"subStatus", String.valueOf(sub.getStatus()) } );
+			}
 
 		}
 	}

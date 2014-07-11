@@ -13,6 +13,9 @@ import provgw.skycall.util.ResponseBuilder;
 
 public class AddSkypeContactCommandHandler extends CommandHandler {
 	
+	static int maxSkypeContacts = 10;
+	static String skypeContactValidationPatter = "^[a-z0-9_.-]{3,15}$";
+	
 	static {
 		ResourceBundle myResources = ResourceBundle.getBundle("provgw");
 		try {
@@ -20,9 +23,6 @@ public class AddSkypeContactCommandHandler extends CommandHandler {
 			skypeContactValidationPatter = myResources.getString("provgw.skype_contact.validation");
 		} catch (Exception e) { }
 	}
-	
-	static int maxSkypeContacts = 10;
-	static String skypeContactValidationPatter = "^[a-z0-9_.-]{3,15}$";
 	
 	SubscriberDAO subDao;
 	

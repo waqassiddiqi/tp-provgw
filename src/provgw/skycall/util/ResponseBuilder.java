@@ -9,6 +9,7 @@ public class ResponseBuilder {
 	public final static String RESULTCODE_REACHED_MAXIMUM_QUOTA = "403";
 	public final static String RESULTCODE_SKYPE_INVALID_ID = "480";
 	public final static String RESULTCODE_SKYPE_CONTACT_ALREADY_EXISTS = "490";
+	public final static String RESULTCODE_SKYPE_CONTACT_ALREADY_REMOVED = "491";
 	public final static String RESULTCODE_TIME_OUT = "604";
 	public final static String RESULTCODE_ERROR = "605";
 	
@@ -33,15 +34,15 @@ public class ResponseBuilder {
 		sb.append("<resultMessage>" + resultMessage + "</resultMessage>");
 		
 		if(nameValuePairs.length > 0 && nameValuePairs.length % 2 == 0) {
-			for(int i=0; i<=nameValuePairs.length/2; i+=2) {
+			for(int i=0; i<nameValuePairs.length/2; i++) {
 				sb.append("<");
-				sb.append(nameValuePairs[i]);
+				sb.append(nameValuePairs[i*2]);
 				sb.append(">");
 				
-				sb.append(nameValuePairs[i + 1]);
+				sb.append(nameValuePairs[i*2 + 1]);
 				
 				sb.append("</");
-				sb.append(nameValuePairs[i]);
+				sb.append(nameValuePairs[i*2]);
 				sb.append(">");
 			}
 		}

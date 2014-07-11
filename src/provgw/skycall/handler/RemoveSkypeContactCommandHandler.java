@@ -27,25 +27,42 @@ public class RemoveSkypeContactCommandHandler extends CommandHandler {
 			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, ResponseBuilder.RESULTCODE_MSISDN_MISSING, "");
 		}
 		
-		this.getSvcEntry().setMsisdn(msisdn);
+		this.getSvcEntry().setMsisdn(msisdn);		
 		this.getSvcEntry().setSkypeId(skypeId);
 		
 		if(subDao.getSubscriberByMsisdn(msisdn.trim()) == null) {
 			
-			this.setResult(true);
-			this.getSvcEntry().setStat(0);
+			this.setResult(false);
+			this.getSvcEntry().setStat(1);
 			
 			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_MSISDN_NOT_REGISTERED, MessageRepository.getMessage("message.sub_not_exists"));
 		}
 		
+		if ((skypeId != null) && (skypeId.matches("\\d+"))) {
+			String tempId = this.subDao.getSkypeIdByVirtualNumber(skypeId
+					.trim());
+			if ((tempId != null) && (tempId.trim().length() > 0)) {
+				skypeId = tempId.trim();
+			} else {
+				return ResponseBuilder.build("1", "480", MessageRepository
+						.getMessage("message.skype_invalid_id"));
+			}
+		}
+
+		this.getSvcEntry().setSkypeId(skypeId);
+		
 		if(subDao.removeSkypeContact(msisdn, skypeId)) {
+			
+			this.setResult(true);
+			this.getSvcEntry().setStat(0);
+			
 			return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
 					ResponseBuilder.RESULTCODE_SUCCESS, 
 					MessageRepository.getMessage("message.skype_remove_success", new String[] { skypeId }));
 		} else {
-			return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
-					ResponseBuilder.RESULTCODE_SUCCESS, 
+			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
+					ResponseBuilder.RESULTCODE_SKYPE_CONTACT_ALREADY_REMOVED, 
 					MessageRepository.getMessage("message.skype_already_removed", new String[] { skypeId }));
 		}
 	}

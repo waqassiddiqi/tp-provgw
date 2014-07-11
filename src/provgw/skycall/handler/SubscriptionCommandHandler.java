@@ -42,7 +42,7 @@ public class SubscriptionCommandHandler extends CommandHandler {
 			if(subDao.addSubscriber(new Subscriber(msisdn, 1, 1))) {
 				
 				this.setResult(true);
-				this.getSvcEntry().setStat(1);
+				this.getSvcEntry().setStat(0);
 				
 				return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
 						ResponseBuilder.RESULTCODE_SUCCESS, 

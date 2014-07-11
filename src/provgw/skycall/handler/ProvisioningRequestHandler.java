@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 
 import provgw.skycall.db.ServiceManagementDAO;
+import provgw.skycall.util.MessageRepository;
+import provgw.skycall.util.ResponseBuilder;
 
 
 public class ProvisioningRequestHandler implements Runnable {
@@ -71,6 +73,7 @@ public class ProvisioningRequestHandler implements Runnable {
 	    XPath xpath = xpathFactory.newXPath();
 	    String msisdn = "";
 	    String channel = "";
+	    String skypeId = "";
 	    
 		InputSource source = new InputSource(new StringReader(xml));
 		
@@ -97,8 +100,8 @@ public class ProvisioningRequestHandler implements Runnable {
 		} else if(function.equalsIgnoreCase("addSkypeID")) {
 			
 			source = new InputSource(new StringReader(xml));
-			channel = xpath.evaluate("/methodCall/skypeid", source);
-			commandParams.put("skypeid", channel);
+			skypeId = xpath.evaluate("/methodCall/skypeid", source);
+			commandParams.put("skypeid", skypeId);
 			
 			cmdHandler = new AddSkypeContactCommandHandler(commandParams);
 			
@@ -107,8 +110,8 @@ public class ProvisioningRequestHandler implements Runnable {
 		} else if(function.equalsIgnoreCase("removeSkypeID")) {
 			
 			source = new InputSource(new StringReader(xml));
-			channel = xpath.evaluate("/methodCall/skypeid", source);
-			commandParams.put("skypeid", channel);
+			skypeId = xpath.evaluate("/methodCall/skypeid", source);
+			commandParams.put("skypeid", skypeId);
 			
 			cmdHandler = new RemoveSkypeContactCommandHandler(commandParams);
 		}
@@ -116,10 +119,18 @@ public class ProvisioningRequestHandler implements Runnable {
 		String commandResponse = "";
 		
 		if(cmdHandler != null) {
-			commandResponse = cmdHandler.execute();
-			cmdHandler.getSvcEntry().setChannel(channel);
-			
-			new ServiceManagementDAO().addEntry(cmdHandler.getSvcEntry());
+			try {
+				commandResponse = cmdHandler.execute();
+				cmdHandler.getSvcEntry().setChannel(channel);
+				
+				new ServiceManagementDAO().addEntry(cmdHandler.getSvcEntry());
+			} catch (Exception e) {
+				log.error(e.getMessage(), e);
+				
+				commandResponse = ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
+						ResponseBuilder.RESULTCODE_ERROR, 
+						MessageRepository.getMessage("message.server_error"));
+			}
 		}
 		
 		return commandResponse;

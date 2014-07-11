@@ -40,7 +40,7 @@ public class QuerySubscriberCommandHandler extends CommandHandler {
 		} else {
 			
 			this.setResult(true);
-			this.getSvcEntry().setStat(1);
+			this.getSvcEntry().setStat(0);
 			
 			return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
 					ResponseBuilder.RESULTCODE_SUCCESS, 

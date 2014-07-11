@@ -34,10 +34,10 @@ public class QuerySkypeContactListCommandHandler extends CommandHandler {
 					ResponseBuilder.RESULTCODE_MSISDN_NOT_REGISTERED, MessageRepository.getMessage("message.sub_not_exists"));
 		}
 		
-		List<String> skypeContacts = this.subDao.getSkypeContacts(msisdn.trim());
+		List<String> skypeContacts = this.subDao.getSkypeContacts(msisdn.trim());		
 		
 		this.setResult(true);
-		this.getSvcEntry().setStat(1);
+		this.getSvcEntry().setStat(0);
 		
 		String[] contacts = new String[skypeContacts.size() * 2];
 		for(int i=0; i<skypeContacts.size(); i++) {

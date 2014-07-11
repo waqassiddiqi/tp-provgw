@@ -19,6 +19,7 @@ public class ServiceManagementEntry {
 		this.stat = stat;
 		this.channel = channel;
 		this.created = new Date();
+		this.stat = 1;
 	}
 	
 	public int getId() {

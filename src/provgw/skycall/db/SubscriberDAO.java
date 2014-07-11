@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -176,6 +177,8 @@ public class SubscriberDAO {
 				list.add(rs.getString(1));
 			}
 			
+			log.debug("Skype ids fetched: " + list.size() + "[ " + Arrays.toString(list.toArray()) + " ]");
+			
 		} catch (SQLException e) {
 			log.error("getSkypeContacts failed: " + e.getMessage(), e);
 		} finally {
@@ -216,5 +219,60 @@ public class SubscriberDAO {
 		}
 		
 		return null;
+	}
+	
+	public String getSkypeIdByVirtualNumber(String virtualId) {
+		String skypeId = null;
+		ResultSet rs = null;
+		String strSql = "SELECT skype_id FROM mapping_tab WHERE virtual_id =  ?";
+
+		PreparedStatement stmt = null;
+		try {
+			stmt = this.db.getConnection().prepareStatement(strSql);
+			stmt.setString(1, virtualId.trim());
+
+			rs = stmt.executeQuery();
+			if (rs.next()) {
+				skypeId = rs.getString(1);
+			}
+		} catch (SQLException e) {
+			this.log.error(
+					"getSkypeIdByVirtualNumber failed: " + e.getMessage(), e);
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException ex) {
+				this.log.error(
+						"failed to close db resources: " + ex.getMessage(), ex);
+			}
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException ex) {
+				this.log.error(
+						"failed to close db resources: " + ex.getMessage(), ex);
+			}
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (SQLException ex) {
+				this.log.error(
+						"failed to close db resources: " + ex.getMessage(), ex);
+			}
+		}
+		return skypeId;
 	}
 }

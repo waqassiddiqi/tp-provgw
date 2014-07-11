@@ -12,7 +12,7 @@ public class RemoveSkypeContactCommandHandler extends CommandHandler {
 	SubscriberDAO subDao;
 	
 	public RemoveSkypeContactCommandHandler(HashMap<String, String> requestParameters) {
-		super(requestParameters, new ServiceManagementEntry("", "", 3, 0, ""));
+		super(requestParameters, new ServiceManagementEntry("", "", 4, 0, ""));
 		
 		subDao = new SubscriberDAO();
 	}
@@ -31,6 +31,10 @@ public class RemoveSkypeContactCommandHandler extends CommandHandler {
 		this.getSvcEntry().setSkypeId(skypeId);
 		
 		if(subDao.getSubscriberByMsisdn(msisdn.trim()) == null) {
+			
+			this.setResult(true);
+			this.getSvcEntry().setStat(0);
+			
 			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_MSISDN_NOT_REGISTERED, MessageRepository.getMessage("message.sub_not_exists"));
 		}

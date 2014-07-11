@@ -43,7 +43,7 @@ public class ProvisioningServer {
 	public void startServer() {
 		try {
 			this.mListenSocket = new ServerSocket(this.mPort);
-			log.info("ReqTrigger TCP Server started at port: " + this.mPort);
+			log.info("ProvisioningServer (ProvGW) started at port: " + this.mPort);
 			while (true) {
 				Socket clientSocket = this.mListenSocket.accept();
 				ProvisioningRequestHandler req = new ProvisioningRequestHandler(clientSocket);
@@ -52,7 +52,7 @@ public class ProvisioningServer {
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);
 		} finally {
-			log.info("Shutting down ReqTrigger TCP Server...");
+			log.info("Shutting down ProvisioningServer (ProvGW)...");
 		}
 	}
 

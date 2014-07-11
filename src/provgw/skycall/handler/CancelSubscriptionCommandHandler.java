@@ -48,7 +48,7 @@ public class CancelSubscriptionCommandHandler extends CommandHandler {
 			} else if(subDao.removeSubscriber(sub)) {
 				
 				this.setResult(true);
-				this.getSvcEntry().setStat(1);
+				this.getSvcEntry().setStat(0);
 				
 				return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
 						ResponseBuilder.RESULTCODE_SUCCESS, 

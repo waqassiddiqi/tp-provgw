@@ -43,13 +43,24 @@ public class AddSkypeContactCommandHandler extends CommandHandler {
 			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, ResponseBuilder.RESULTCODE_MSISDN_MISSING, "");
 		}
 		
-		this.getSvcEntry().setMsisdn(msisdn);
-		this.getSvcEntry().setSkypeId(skypeId);
-		
 		if(subDao.getSubscriberByMsisdn(msisdn.trim()) == null) {
 			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_MSISDN_NOT_REGISTERED, MessageRepository.getMessage("message.sub_not_exists"));
 		}
+		
+		if ((skypeId != null) && (skypeId.matches("\\d+"))) {
+			String tempId = this.subDao.getSkypeIdByVirtualNumber(skypeId
+					.trim());
+			if ((tempId != null) && (tempId.trim().length() > 0)) {
+				skypeId = tempId.trim();
+			} else {
+				return ResponseBuilder.build("1", "480", MessageRepository
+						.getMessage("message.skype_invalid_id"));
+			}
+		}
+		
+		this.getSvcEntry().setMsisdn(msisdn);
+		this.getSvcEntry().setSkypeId(skypeId);
 		
 		if(validateSkypeId(skypeId) == false) {
 			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
@@ -78,8 +89,9 @@ public class AddSkypeContactCommandHandler extends CommandHandler {
 		String virtualId = subDao.getVirtualId(skypeId, msisdn);
 		
 		if(virtualId != null && virtualId.trim().length() > 0) {
+			
 			this.setResult(true);
-			this.getSvcEntry().setStat(1);
+			this.getSvcEntry().setStat(0);
 			
 			return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
 					ResponseBuilder.RESULTCODE_SUCCESS, 

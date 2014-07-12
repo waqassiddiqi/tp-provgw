@@ -30,13 +30,17 @@ public class RemoveSkypeContactCommandHandler extends CommandHandler {
 		this.getSvcEntry().setMsisdn(msisdn);		
 		this.getSvcEntry().setSkypeId(skypeId);
 		
-		if(subDao.getSubscriberByMsisdn(msisdn.trim()) == null) {
+		if(subDao.getSubscriberByMsisdn(msisdn.trim()) == null) {						
 			
-			this.setResult(false);
-			this.getSvcEntry().setStat(1);
-			
-			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
-					ResponseBuilder.RESULTCODE_MSISDN_NOT_REGISTERED, MessageRepository.getMessage("message.sub_not_exists"));
+			if(ProvisioningRequestHandler.isAutoProvisionEnabled()) {
+				
+				new SubscriptionCommandHandler(getRequestParameters()).execute();
+				
+			} else {
+				return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
+						ResponseBuilder.RESULTCODE_MSISDN_NOT_REGISTERED, 
+						MessageRepository.getMessage("message.sub_not_exists"));
+			}
 		}
 		
 		if ((skypeId != null) && (skypeId.matches("\\d+"))) {

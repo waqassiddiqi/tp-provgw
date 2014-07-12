@@ -43,9 +43,17 @@ public class AddSkypeContactCommandHandler extends CommandHandler {
 			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, ResponseBuilder.RESULTCODE_MSISDN_MISSING, "");
 		}
 		
-		if(subDao.getSubscriberByMsisdn(msisdn.trim()) == null) {
-			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
-					ResponseBuilder.RESULTCODE_MSISDN_NOT_REGISTERED, MessageRepository.getMessage("message.sub_not_exists"));
+		if(subDao.getSubscriberByMsisdn(msisdn.trim()) == null) {			
+			
+			if(ProvisioningRequestHandler.isAutoProvisionEnabled()) {
+				
+				new SubscriptionCommandHandler(getRequestParameters()).execute();
+				
+			} else {
+				return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
+						ResponseBuilder.RESULTCODE_MSISDN_NOT_REGISTERED, 
+						MessageRepository.getMessage("message.sub_not_exists"));
+			}
 		}
 		
 		if ((skypeId != null) && (skypeId.matches("\\d+"))) {

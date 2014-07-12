@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.ResourceBundle;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathExpressionException;
@@ -25,6 +26,19 @@ public class ProvisioningRequestHandler implements Runnable {
 	private Logger log = Logger.getLogger(getClass().getName());
 	private Socket mClientSocket;
 	private boolean mClientConnected = false;
+	
+	private static boolean autoPrivision = true;
+	
+	static {
+		ResourceBundle myResources = ResourceBundle.getBundle("provgw");
+		try {
+			autoPrivision = Integer.parseInt(myResources.getString("provgw.auto_provision")) == 1 ? true : false;			
+		} catch (Exception e) { }
+	}
+	
+	public static boolean isAutoProvisionEnabled() {
+		return autoPrivision;
+	}
 	
 	public ProvisioningRequestHandler(Socket clientSocket) {
         this.mClientSocket = clientSocket;
@@ -91,7 +105,9 @@ public class ProvisioningRequestHandler implements Runnable {
 		channel = xpath.evaluate("/methodCall/channel", source);
 		commandParams.put("channel", channel);
 		
-		if(function.equalsIgnoreCase("subscribeService")) {
+		if(function.equalsIgnoreCase("help")) {
+			cmdHandler = new HelpCommandHandler(commandParams);			
+		} else if(function.equalsIgnoreCase("subscribeService")) {
 			cmdHandler = new SubscriptionCommandHandler(commandParams);
 		} else if(function.equalsIgnoreCase("unsubscribeService")) {
 			cmdHandler = new CancelSubscriptionCommandHandler(commandParams);

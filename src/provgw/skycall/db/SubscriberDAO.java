@@ -103,11 +103,10 @@ public class SubscriberDAO {
 		PreparedStatement stmt = null;
 		
 		try {
-			String strSql = "UPDATE subscriber_tab set status = 0, last_updated_date = ? WHERE msisdn = ?";
+			String strSql = "UPDATE subscriber_tab set status = 0, last_updated_date = NOW() WHERE msisdn = ?";
 			stmt = this.db.getConnection().prepareStatement(strSql);
 			
-			stmt.setTimestamp(1, new Timestamp(new Date().getTime()));
-			stmt.setString(2, sub.getMsisdn());
+			stmt.setString(1, sub.getMsisdn());
 			
 			if(stmt.executeUpdate() > 0)
 				return true;

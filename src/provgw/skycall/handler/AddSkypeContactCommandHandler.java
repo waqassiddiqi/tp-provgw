@@ -35,6 +35,8 @@ public class AddSkypeContactCommandHandler extends CommandHandler {
 	@Override
 	public String execute() {
 		
+		String response = "";
+		
 		String msisdn = this.requestParameters.get("msisdn"); 
 		String skypeId = this.requestParameters.get("skypeid");
 		
@@ -47,7 +49,7 @@ public class AddSkypeContactCommandHandler extends CommandHandler {
 			
 			if(ProvisioningRequestHandler.isAutoProvisionEnabled()) {
 				
-				new SubscriptionCommandHandler(getRequestParameters()).execute();
+				response = new SubscriptionCommandHandler(getRequestParameters()).execute();
 				
 			} else {
 				return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
@@ -62,7 +64,7 @@ public class AddSkypeContactCommandHandler extends CommandHandler {
 			if ((tempId != null) && (tempId.trim().length() > 0)) {
 				skypeId = tempId.trim();
 			} else {
-				return ResponseBuilder.build("1", "480", MessageRepository
+				response += "|" + ResponseBuilder.build("1", "480", MessageRepository
 						.getMessage("message.skype_invalid_id"));
 			}
 		}
@@ -71,7 +73,7 @@ public class AddSkypeContactCommandHandler extends CommandHandler {
 		this.getSvcEntry().setSkypeId(skypeId);
 		
 		if(validateSkypeId(skypeId) == false) {
-			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
+			response += "|" + ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_SKYPE_INVALID_ID, 
 					MessageRepository.getMessage("message.skype_invalid_id"));
 		}
@@ -79,7 +81,7 @@ public class AddSkypeContactCommandHandler extends CommandHandler {
 		List<String> skypeContacts = this.subDao.getSkypeContacts(msisdn.trim());
 		
 		if(skypeContacts.size() >= maxSkypeContacts) {
-			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
+			response += "|" + ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_REACHED_MAXIMUM_QUOTA, 
 					MessageRepository.getMessage("message.skype_limit_exceeds"));
 		}
@@ -87,9 +89,11 @@ public class AddSkypeContactCommandHandler extends CommandHandler {
 		if(skypeContacts.size() > 0) {
 			for(String contact : skypeContacts) {
 				if(contact.trim().equalsIgnoreCase(skypeId.trim().toLowerCase())) {
-					return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
+					response += "|" + ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 							ResponseBuilder.RESULTCODE_SKYPE_CONTACT_ALREADY_EXISTS, 
 							MessageRepository.getMessage("message.skype_already_exists", new String[] { skypeId }));
+					
+					break;
 				}
 			}
 		}
@@ -101,15 +105,17 @@ public class AddSkypeContactCommandHandler extends CommandHandler {
 			this.setResult(true);
 			this.getSvcEntry().setStat(0);
 			
-			return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
+			response += "|" + ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
 					ResponseBuilder.RESULTCODE_SUCCESS, 
 					MessageRepository.getMessage("message.skype_add_success", new String[] { skypeId, virtualId }), 
 					new String[] { "virtualID", virtualId });
 		} else {
-			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
+			response += "|" + ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_ERROR, 
 					MessageRepository.getMessage("message.server_error"));
 		}
+		
+		return response;
 	}
 	
 	private boolean validateSkypeId(String skypeId) {

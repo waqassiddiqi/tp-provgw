@@ -23,6 +23,8 @@ public class RemoveSkypeContactCommandHandler extends CommandHandler {
 		String msisdn = this.requestParameters.get("msisdn"); 
 		String skypeId = this.requestParameters.get("skypeid");
 		
+		String response = "";
+		
 		if(msisdn == null) {
 			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, ResponseBuilder.RESULTCODE_MSISDN_MISSING, "");
 		}
@@ -34,7 +36,7 @@ public class RemoveSkypeContactCommandHandler extends CommandHandler {
 			
 			if(ProvisioningRequestHandler.isAutoProvisionEnabled()) {
 				
-				new SubscriptionCommandHandler(getRequestParameters()).execute();
+				response = new SubscriptionCommandHandler(getRequestParameters()).execute();
 				
 			} else {
 				return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
@@ -49,7 +51,7 @@ public class RemoveSkypeContactCommandHandler extends CommandHandler {
 			if ((tempId != null) && (tempId.trim().length() > 0)) {
 				skypeId = tempId.trim();
 			} else {
-				return ResponseBuilder.build("1", "480", MessageRepository
+				response += "|" + ResponseBuilder.build("1", "480", MessageRepository
 						.getMessage("message.skype_invalid_id"));
 			}
 		}
@@ -61,13 +63,15 @@ public class RemoveSkypeContactCommandHandler extends CommandHandler {
 			this.setResult(true);
 			this.getSvcEntry().setStat(0);
 			
-			return ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
+			response += "|" + ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
 					ResponseBuilder.RESULTCODE_SUCCESS, 
 					MessageRepository.getMessage("message.skype_remove_success", new String[] { skypeId }));
 		} else {
-			return ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
+			response += "|" + ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_SKYPE_CONTACT_ALREADY_REMOVED, 
 					MessageRepository.getMessage("message.skype_already_removed", new String[] { skypeId }));
 		}
+		
+		return response;
 	}
 }

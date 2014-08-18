@@ -21,7 +21,7 @@ public class ResponseBuilder {
 		StringBuilder sb = new StringBuilder("<Response>");
 		sb.append("<result>" + result + "</result>");
 		sb.append("<resultCode>" + resultCode + "</resultCode>");
-		sb.append("<resultMessage>" + resultMessage + "</resultMessage>");
+		sb.append("<resultMessage><message>" + resultMessage + "</message></resultMessage>");
 		
 		sb.append("</Response>");
 		return sb.toString();
@@ -31,7 +31,7 @@ public class ResponseBuilder {
 		StringBuilder sb = new StringBuilder("<Response>");
 		sb.append("<result>" + result + "</result>");
 		sb.append("<resultCode>" + resultCode + "</resultCode>");
-		sb.append("<resultMessage>" + resultMessage + "</resultMessage>");
+		sb.append("<resultMessage><message>" + resultMessage + "</message></resultMessage>");
 		
 		if(nameValuePairs.length > 0 && nameValuePairs.length % 2 == 0) {
 			for(int i=0; i<nameValuePairs.length/2; i++) {
